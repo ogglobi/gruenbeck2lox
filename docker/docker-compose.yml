@@ -1,0 +1,19 @@
+services:
+  gruenbeck2lox:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: gruenbeck2lox
+    restart: unless-stopped
+
+    ports:
+      - "8080:8080"
+
+    volumes:
+      - ./data:/app/data          # SQLite database + config.yaml
+
+    environment:
+      - GRUENBECK2LOX_LOG_LEVEL=INFO
+      # Uncomment and set a fixed Fernet key (base64url-encoded, 32 bytes).
+      # If left empty a key is auto-generated and stored in /app/data/.secret.
+      # - GRUENBECK2LOX_SECRET_KEY=

@@ -1,0 +1,43 @@
+devices:
+  # SC-Serie: direkte lokale HTTP-Anbindung (kein Cloud-Account nötig)
+  - name: "Enthärtung SC"
+    type: sc                 # sc | sd
+    host: "192.168.1.50"    # Lokale IP der Grünbeck-Anlage
+    port: 80
+    poll_interval: 30        # Abfrageintervall in Sekunden
+
+  # SD-Serie: Anbindung über myGruenbeck-Cloud-Account
+  # Die Anlage muss in der myGruenbeck-App registriert sein.
+  # Echte IP-Adresse wird nicht benötigt – das Gerät wird über die Cloud erkannt.
+  # - name: "Enthärtung SD"
+  #   type: sd
+  #   cloud_email: "meine@email.de"    # myGruenbeck-App Login
+  #   cloud_password: "meinPassword"   # Passwort wird verschlüsselt gespeichert
+  #   poll_interval: 30
+
+loxone:
+  - name: "Miniserver Haus"
+    host: "192.168.1.10"     # IP des Loxone Miniservers
+    port: 7001               # UDP-Port des Datagramm-Eingangs
+    push_on_change: true     # Sofort pushen bei Wertänderung
+    push_interval_sec: 300   # Heartbeat: spätestens alle 5 Minuten pushen
+    fields:
+      # Alle gewünschten Datenpunkte hier eintragen.
+      # Der Name muss mit dem Bezeichner im Loxone Virtuellen UDP-Eingang übereinstimmen.
+      - currentFlow           # l/min – live bei fließendem Wasser
+      - residualCapacity      # Restkapazität in Litern
+      - residualCapacityM3    # Restkapazität in m³ (3 Dezimalstellen)
+      - residualCapacityPct   # Restkapazität in %
+      - totalCapacity         # Gesamtkapazität in Litern
+      - waterToday            # Wasserverbrauch heute in Litern
+      - waterMonth            # Wasserverbrauch diesen Monat in Litern
+      - saltToday             # Salzverbrauch heute in kg
+      - saltRange             # Salzreichweite in Tagen
+      - water_hardness_in     # Eingangshärte in °dH
+      - water_hardness_out    # Ausgangshärte (Setpoint) in °dH
+      - next_regeneration     # Nächste Regeneration (Loxone-Timestamp)
+      - last_regeneration     # Letzte Regeneration (Loxone-Timestamp)
+      - hasError              # 1 = Fehler aktiv, 0 = OK
+
+logging:
+  level: INFO

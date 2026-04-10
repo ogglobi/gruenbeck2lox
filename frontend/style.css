@@ -1,0 +1,473 @@
+/* gruenbeck2lox – custom styles (supplements Pico CSS) */
+
+:root {
+  --color-ok: #2a9d8f;
+  --color-error: #e76f51;
+  --color-warn: #e9c46a;
+  --color-muted: #6c757d;
+  --radius: 8px;
+}
+
+/* ── Layout ────────────────────────────────────────────────────────────────── */
+
+body {
+  min-height: 100vh;
+}
+
+header.container-fluid {
+  background: var(--pico-primary-background);
+  padding-block: 0.5rem;
+  border-bottom: 1px solid var(--pico-muted-border-color);
+}
+
+header nav strong {
+  font-size: 1.1rem;
+  color: var(--pico-primary);
+}
+
+.hidden { display: none !important; }
+
+main.container {
+  padding-top: 1.5rem;
+}
+
+/* ── Tab Navigation ────────────────────────────────────────────────────────── */
+
+#nav-tabs a.tab-link {
+  color: var(--pico-muted-color);
+  text-decoration: none;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius);
+  transition: background 0.15s, color 0.15s;
+}
+
+#nav-tabs a.tab-link:hover {
+  background: var(--pico-muted-background-color);
+  color: var(--pico-color);
+}
+
+#nav-tabs a.tab-link.active {
+  background: var(--pico-primary);
+  color: #fff;
+}
+
+/* ── Section header ────────────────────────────────────────────────────────── */
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.section-header h2 {
+  margin: 0;
+}
+
+.btn-icon {
+  font-size: 0.9rem;
+  padding: 0.4rem 0.9rem;
+}
+
+/* ── Dashboard cards ───────────────────────────────────────────────────────── */
+
+.device-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.25rem;
+  margin-top: 1rem;
+}
+
+.device-card {
+  background: var(--pico-card-background-color);
+  border: 1px solid var(--pico-muted-border-color);
+  border-radius: calc(var(--radius) * 1.5);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Card head ────────────────── */
+
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1.1rem 0.65rem;
+  border-bottom: 1px solid var(--pico-muted-border-color);
+}
+
+.card-head h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card-head .badge {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  font-weight: 700;
+  background: var(--pico-primary);
+  color: #fff;
+}
+
+.status-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+}
+.status-pill.ok    { background: #d1f5ee; color: #1a6f62; }
+.status-pill.error { background: #fde8e0; color: #b94a2c; }
+.status-pill.warn  { background: #fef5d5; color: #a07800; }
+
+/* Hardness row ─────────────── */
+
+.card-body {
+  padding: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Each metric section is a row with a left icon+label and right value(s) */
+.card-section {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.75rem 1.1rem;
+  border-bottom: 1px solid var(--pico-muted-border-color);
+}
+.card-section:last-child { border-bottom: none; }
+
+.cs-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  width: 2rem;
+  text-align: center;
+}
+
+.cs-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.cs-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-muted);
+  margin-bottom: 0.2rem;
+}
+
+/* Three-column consumption row (Heute / Monat / Jahr) */
+.cs-cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.3rem;
+}
+
+.cs-col {
+  text-align: center;
+}
+
+.cs-col .cs-val {
+  font-size: 0.92rem;
+  font-weight: 700;
+  display: block;
+}
+
+.cs-col .cs-lbl {
+  font-size: 0.68rem;
+  color: var(--color-muted);
+}
+
+/* Single large value */
+.cs-single {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* Capacity bar inside a section */
+.cap-bar {
+  height: 7px;
+  background: var(--pico-muted-border-color);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 0.35rem;
+}
+
+.cap-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--pico-primary) 0%, #52c4b8 100%);
+  transition: width 0.4s ease;
+  min-width: 4px;
+}
+
+.cap-bar-fill.warn  { background: linear-gradient(90deg, #e9c46a, #f4a261); }
+.cap-bar-fill.low   { background: linear-gradient(90deg, var(--color-error), #f4845f); }
+
+/* Hardness inline display */
+.hardness-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hardness-val {
+  text-align: center;
+  min-width: 52px;
+}
+
+.hardness-val .hval {
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.hardness-val .hlabel {
+  font-size: 0.65rem;
+  color: var(--color-muted);
+  text-transform: uppercase;
+}
+
+.hardness-arrow {
+  color: var(--pico-primary);
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.card-mode {
+  font-size: 0.78rem;
+  color: var(--color-muted);
+}
+
+/* No-values placeholder ─────── */
+
+.card-no-values {
+  padding: 1.5rem 1.1rem;
+  text-align: center;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+  flex: 1;
+}
+
+/* ── Devices / Loxone list ─────────────────────────────────────────────────── */
+
+.list-item {
+  background: var(--pico-card-background-color);
+  border: 1px solid var(--pico-muted-border-color);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.list-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.list-item-header h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.list-item-meta {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  margin-top: 0.25rem;
+}
+
+.item-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.item-actions button {
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8rem;
+}
+
+/* ── Mappings sub-list ─────────────────────────────────────────────────────── */
+
+.mappings-list {
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--pico-muted-border-color);
+  padding-top: 0.75rem;
+}
+
+.mapping-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  padding: 0.2rem 0;
+}
+
+.mapping-row code {
+  background: var(--pico-code-background-color);
+  border-radius: 4px;
+  padding: 0.05rem 0.4rem;
+  font-size: 0.8rem;
+}
+
+/* ── Status indicators ─────────────────────────────────────────────────────── */
+
+.status-ok    { color: var(--color-ok);    font-weight: 700; }
+.status-error { color: var(--color-error); font-weight: 700; }
+
+/* ── Logs table ────────────────────────────────────────────────────────────── */
+
+#logs-table-wrap {
+  overflow-x: auto;
+}
+
+#logs-table {
+  width: 100%;
+  font-size: 0.875rem;
+}
+
+#logs-table th,
+#logs-table td {
+  white-space: nowrap;
+  padding: 0.4rem 0.6rem;
+}
+
+/* ── Toast ─────────────────────────────────────────────────────────────────── */
+
+#toast-container {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 9999;
+}
+
+.toast {
+  background: #333;
+  color: #fff;
+  padding: 0.6rem 1.1rem;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  animation: fadeIn 0.2s ease;
+}
+
+.toast.success { background: var(--color-ok); }
+.toast.error   { background: var(--color-error); }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Misc ──────────────────────────────────────────────────────────────────── */
+
+.muted { color: var(--color-muted); }
+
+dialog article {
+  max-width: 520px;
+  width: 100%;
+}
+
+/* ── Subscription list (under server card) ─────────────────────────────────── */
+
+.subs-list {
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--pico-muted-border-color);
+  padding-top: 0.75rem;
+}
+
+.sub-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid var(--pico-muted-border-color);
+}
+
+.sub-row:last-of-type { border-bottom: none; }
+
+.sub-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+/* ── Field picker (UDP subscription dialog) ─────────────────────────────────── */
+
+.field-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.2rem 0.75rem;
+  margin-top: 0.4rem;
+}
+
+.field-picker-grid label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.84rem;
+  cursor: pointer;
+  margin: 0;
+}
+
+.field-picker-grid input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+/* ── Error section ─────────────────────────────────────────────────────────── */
+
+.cs-error {
+  background: rgba(var(--pico-color-red-550), 0.06);
+  border-left: 3px solid var(--color-error);
+}
+
+.cs-error .cs-title {
+  color: var(--color-error);
+}
+
+/* ── Raw-detail dialog ─────────────────────────────────────────────────────── */
+
+dialog#dialog-device-raw article {
+  max-width: 700px;
+}
+
+.raw-detail-table {
+  width: 100%;
+  font-size: 0.82rem;
+  border-collapse: collapse;
+}
+
+.raw-detail-table tr:nth-child(even) {
+  background: var(--pico-muted-background-color);
+}
+
+.raw-detail-table td {
+  padding: 0.25rem 0.5rem;
+  vertical-align: top;
+  word-break: break-all;
+}
+
+.raw-detail-table td:first-child {
+  font-family: monospace;
+  color: var(--color-muted);
+  white-space: nowrap;
+  width: 40%;
+}

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gruenbeck2lox</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="container-fluid">
+    <nav>
+      <ul>
+        <li><strong>💧 gruenbeck2lox</strong></li>
+      </ul>
+      <ul id="nav-tabs">
+        <li><a href="#" data-tab="dashboard" class="tab-link active">Dashboard</a></li>
+        <li><a href="#" data-tab="devices"   class="tab-link">Geräte</a></li>
+        <li><a href="#" data-tab="loxone"    class="tab-link">Loxone</a></li>
+        <li><a href="#" data-tab="logs"      class="tab-link">Protokoll</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container">
+
+    <!-- ── Dashboard ──────────────────────────────────────────────────── -->
+    <section id="tab-dashboard" class="tab-content">
+      <h2>Dashboard</h2>
+      <div id="dashboard-grid" class="device-grid">
+        <p id="dashboard-empty" class="muted">Keine Geräte konfiguriert.</p>
+      </div>
+    </section>
+
+    <!-- ── Geräte ──────────────────────────────────────────────────────── -->
+    <section id="tab-devices" class="tab-content hidden">
+      <div class="section-header">
+        <h2>Grünbeck-Geräte</h2>
+        <button id="btn-add-device" class="btn-icon">+ Gerät hinzufügen</button>
+      </div>
+      <div id="devices-list"></div>
+
+      <!-- Add / Edit device dialog -->
+      <dialog id="dialog-device">
+        <article>
+          <header>
+            <button class="close" aria-label="Schließen" data-close-dialog="dialog-device"></button>
+            <strong id="dialog-device-title">Gerät hinzufügen</strong>
+          </header>
+          <form id="form-device" novalidate>
+            <input type="hidden" name="id" />
+            <label>
+              Name
+              <input name="name" type="text" required placeholder="z.B. EG Enthärtung" />
+            </label>
+            <label>
+              Typ
+              <select name="type" id="device-type-select">
+                <option value="sc">SC-Serie (SC18, SC23, …)</option>
+                <option value="sd">SD-Serie / softliQ (SD18, SD23, …)</option>
+              </select>
+            </label>
+            <!-- Local fields: visible for SC devices -->
+            <div id="local-fields">
+              <label>
+                IP-Adresse / Hostname
+                <input name="host" type="text" placeholder="192.168.1.50" />
+              </label>
+              <div class="grid">
+                <label>
+                  Port
+                  <input name="port" type="number" value="80" min="1" max="65535" />
+                </label>
+              </div>
+            </div>
+            <!-- Cloud fields: visible for SD devices -->
+            <div id="cloud-fields" class="hidden">
+              <small>myGruenbeck Cloud-Zugangsdaten (lokal gespeichert, verschlüsselt)</small>
+              <label>
+                myGruenbeck E-Mail
+                <input name="cloud_email" type="email" placeholder="name@beispiel.de" />
+              </label>
+              <label>
+                myGruenbeck Passwort
+                <input name="cloud_password" type="password" placeholder="Passwort (leer = nicht ändern)" />
+              </label>
+            </div>
+            <label>
+              Abfrageintervall (s)
+              <input name="poll_interval" type="number" value="30" min="5" max="3600" />
+            </label>
+            <label>
+              <input name="enabled" type="checkbox" checked />
+              Aktiv
+            </label>
+            <footer>
+              <button type="submit" class="primary">Speichern</button>
+              <button type="button" data-close-dialog="dialog-device">Abbrechen</button>
+            </footer>
+          </form>
+        </article>
+      </dialog>
+    </section>
+
+    <!-- ── Loxone ──────────────────────────────────────────────────────── -->
+    <section id="tab-loxone" class="tab-content hidden">
+      <div class="section-header">
+        <h2>Loxone Miniserver</h2>
+        <button id="btn-add-server" class="btn-icon">+ Server hinzufügen</button>
+      </div>
+      <div id="loxone-list"></div>
+
+      <!-- Add / Edit server dialog -->
+      <dialog id="dialog-server">
+        <article>
+          <header>
+            <button class="close" aria-label="Schließen" data-close-dialog="dialog-server"></button>
+            <strong id="dialog-server-title">Server hinzufügen</strong>
+          </header>
+          <form id="form-server" novalidate>
+            <input type="hidden" name="id" />
+            <label>
+              Name
+              <input name="name" type="text" required placeholder="z.B. Miniserver Haus" />
+            </label>
+            <label>
+              IP-Adresse / Hostname
+              <input name="host" type="text" required placeholder="192.168.1.10" />
+            </label>
+            <label>
+              UDP-Port (Loxone Empfangsport)
+              <input name="port" type="number" value="7777" min="1" max="65535" />
+            </label>
+            <label>
+              <input name="push_on_change" type="checkbox" checked />
+              Bei Wertänderung sofort pushen
+            </label>
+            <label>
+              Mindest-Intervall (Sekunden)
+              <input name="push_interval_sec" type="number" value="300" min="10" max="86400" />
+              <small>Auch ohne Änderung wird spätestens alle N Sekunden ein Paket gesendet.</small>
+            </label>
+            <footer>
+              <button type="submit" class="primary">Speichern</button>
+              <button type="button" data-close-dialog="dialog-server">Abbrechen</button>
+            </footer>
+          </form>
+        </article>
+      </dialog>
+
+      <!-- Subscription dialog -->
+      <dialog id="dialog-subscription">
+        <article style="max-width:620px">
+          <header>
+            <button class="close" aria-label="Schließen" data-close-dialog="dialog-subscription"></button>
+            <strong id="dialog-sub-title">UDP-Paket konfigurieren</strong>
+          </header>
+          <form id="form-subscription" novalidate>
+            <input type="hidden" name="server_id" />
+            <input type="hidden" name="sub_id" />
+            <label>
+              Grünbeck-Gerät
+              <select id="sub-device-select" name="device_id" required></select>
+            </label>
+            <fieldset style="border:1px solid var(--pico-muted-border-color);border-radius:var(--radius);padding:0.75rem">
+              <legend style="font-size:0.9rem;font-weight:600;padding:0 0.4rem">
+                Felder im UDP-Paket
+                <button type="button" id="btn-check-all" class="outline secondary" style="font-size:0.72rem;padding:0.15rem 0.5rem;margin-left:0.5rem">Alle</button>
+                <button type="button" id="btn-check-none" class="outline secondary" style="font-size:0.72rem;padding:0.15rem 0.5rem">Keine</button>
+              </legend>
+              <div id="field-picker" class="field-picker-grid"></div>
+            </fieldset>
+            <footer>
+              <button type="submit" class="primary">Speichern</button>
+              <button type="button" data-close-dialog="dialog-subscription">Abbrechen</button>
+            </footer>
+          </form>
+        </article>
+      </dialog>
+    </section>
+
+    <!-- ── Protokoll ───────────────────────────────────────────────────── -->
+    <section id="tab-logs" class="tab-content hidden">
+      <div class="section-header">
+        <h2>Protokoll</h2>
+        <button id="btn-refresh-logs">↻ Aktualisieren</button>
+      </div>
+      <div id="logs-table-wrap">
+        <table id="logs-table">
+          <thead>
+            <tr>
+              <th>Zeitpunkt</th>
+              <th>Gerät</th>
+              <th>Schlüssel</th>
+              <th>Loxone-Eingang</th>
+              <th>Wert</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="logs-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Raw-detail dialog -->
+  <dialog id="dialog-device-raw">
+    <article>
+      <header>
+        <button class="close" aria-label="Schließen" data-close-dialog="dialog-device-raw"></button>
+        <strong id="raw-detail-title">Rohdaten</strong>
+      </header>
+      <div id="raw-detail-body" style="overflow-y:auto;max-height:60vh"></div>
+      <footer>
+        <button type="button" data-close-dialog="dialog-device-raw">Schließen</button>
+      </footer>
+    </article>
+  </dialog>
+
+  <!-- Toast notifications -->
+  <div id="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
