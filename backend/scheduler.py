@@ -31,11 +31,12 @@ class DevicePoller:
         self._server_push_ts: dict[int, float] = {}
         self._ws_push_ts: float = 0.0  # last time a WS-triggered push was sent
         # WS-based flow accumulator – integrates mflow1 (m³/h) to derive waterToday.
-        # Resets at UTC midnight.  Starts at 0 on container start (accepted).
+        # Resets at UTC midnight. Persisted to SQLite so container restarts keep the value.
         self._flow_last_ts: float = 0.0
         self._flow_last_m3h: float = 0.0
         self._flow_today_m3: float = 0.0
         self._flow_day: str = ""  # ISO date (UTC) of current accumulator day
+        self._flow_loaded: bool = False  # True after DB restore attempted
 
     @property
     def device_id(self) -> int:
@@ -123,7 +124,7 @@ class DevicePoller:
             return  # throttle
 
         self._ws_push_ts = now
-        flow_lmin = round(raw_flow_m3h * 1000 / 60, 3)
+        flow_lmin = round(raw_flow_m3h * 1000 / 60, 1)
         logger.debug("WS flow push device %s: currentFlow=%s l/min", self.device_id, flow_lmin)
         await self._push_flow_only(flow_lmin)
 
@@ -171,6 +172,25 @@ class DevicePoller:
     async def _poll_once(self) -> None:
         device = self._device
         raw_source = None
+
+        # Restore accumulator from DB on first run (survives container restart).
+        if not self._flow_loaded:
+            self._flow_loaded = True
+            row = await self._db.fetchone(
+                "SELECT acc_date, water_m3 FROM water_today_accumulator WHERE device_id = ?",
+                (self.device_id,),
+            )
+            if row is not None:
+                today_utc = datetime.now(timezone.utc).date().isoformat()
+                r = dict(row)
+                if r["acc_date"] == today_utc:
+                    self._flow_today_m3 = float(r["water_m3"])
+                    self._flow_day = today_utc
+                    self._flow_last_ts = asyncio.get_event_loop().time()
+                    logger.info(
+                        "Device %s: restored waterToday accumulator %.3f m³ from DB",
+                        self.device_id, self._flow_today_m3,
+                    )
         try:
             if device.get("cloud_password_enc") and device["type"] == "sd":
                 # SD device via myGruenbeck cloud – persistent client with live WebSocket so
@@ -215,6 +235,16 @@ class DevicePoller:
 
         # Persist values to DB
         await self._save_values(values)
+        # Persist waterToday accumulator so it survives container restarts.
+        await self._db.execute(
+            "INSERT INTO water_today_accumulator (device_id, acc_date, water_m3, updated_at) "
+            "VALUES (?, ?, ?, ?) "
+            "ON CONFLICT(device_id) DO UPDATE SET "
+            "  acc_date=excluded.acc_date, water_m3=excluded.water_m3, updated_at=excluded.updated_at",
+            (self.device_id, today_utc,
+             self._flow_today_m3 if self._flow_day == today_utc else 0.0,
+             datetime.now(timezone.utc).isoformat()),
+        )
         # Save full raw values for detail view
         if raw_source is not None and hasattr(raw_source, "_latest_values") and raw_source._latest_values:
             await self._save_raw_cache(raw_source._latest_values)

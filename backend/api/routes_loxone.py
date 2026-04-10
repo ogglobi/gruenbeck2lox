@@ -40,7 +40,7 @@ _FIELD_META: dict[str, tuple[str, str]] = {
     "last_regeneration":   ("Letzte Regeneration",     "<v.u>"),
     "maintenanceDays":     ("Tage bis Wartung (Tage)", "<v> Tage"),
     "hasError":            ("Fehler aktiv (0/1)",      "<v> "),
-    "currentFlow":         ("Durchfluss (l/Min)",       "<v> l/Min"),
+    "currentFlow":         ("Durchfluss (l/Min)",       "<v.1> l/Min"),
     "error_code":          ("Fehlercode",              "<v.1>"),
 }
 

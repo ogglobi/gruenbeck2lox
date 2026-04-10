@@ -91,6 +91,13 @@ CREATE TABLE IF NOT EXISTS daily_baseline (
     salt_month_start  REAL
 );
 
+CREATE TABLE IF NOT EXISTS water_today_accumulator (
+    device_id  INTEGER PRIMARY KEY REFERENCES devices(id) ON DELETE CASCADE,
+    acc_date   TEXT    NOT NULL,  -- ISO date (UTC) the accumulator belongs to
+    water_m3   REAL    NOT NULL DEFAULT 0.0,
+    updated_at TEXT    NOT NULL DEFAULT (datetime('now'))
+);
+
 CREATE INDEX IF NOT EXISTS ix_push_log_created   ON push_log(created_at DESC);
 CREATE INDEX IF NOT EXISTS ix_device_values_dev  ON device_values(device_id);
 CREATE INDEX IF NOT EXISTS ix_mappings_server    ON mappings(loxone_server_id);

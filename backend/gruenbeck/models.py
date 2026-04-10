@@ -66,9 +66,9 @@ class DeviceValues(BaseModel):
         """Return a flat {key: value} dict for Loxone push mapping."""
         return {
             # Convert m³/h → l/min for Loxone (1 m³/h = 1000/60 l/min ≈ 16.667)
-            "currentFlow":          round(self.current_flow * 1000 / 60, 3) if self.current_flow is not None else None,
+            "currentFlow":          round(self.current_flow * 1000 / 60, 1) if self.current_flow is not None else None,
             "residualCapacity":     self.residual_capacity,
-            "residualCapacityM3":   self.residual_capacity_m3,
+            "residualCapacityM3":   round(self.residual_capacity_m3, 3) if self.residual_capacity_m3 is not None else None,
             "residualCapacityPct":  self.residual_capacity_pct,
             "totalCapacity":        self.total_capacity,
             "salt_quantity":        self.salt_quantity,
