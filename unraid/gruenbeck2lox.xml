@@ -54,6 +54,39 @@
 
   <!-- Environment variables -->
   <Config
+    Name="PUID"
+    Target="PUID"
+    Default="99"
+    Mode=""
+    Description="User ID für den Container-Prozess (Unraid Standard: 99 = nobody)"
+    Type="Variable"
+    Display="always"
+    Required="false"
+    Mask="false">99</Config>
+
+  <Config
+    Name="PGID"
+    Target="PGID"
+    Default="100"
+    Mode=""
+    Description="Group ID für den Container-Prozess (Unraid Standard: 100 = users)"
+    Type="Variable"
+    Display="always"
+    Required="false"
+    Mask="false">100</Config>
+
+  <Config
+    Name="UMASK"
+    Target="UMASK"
+    Default="000"
+    Mode=""
+    Description="Umask für neu erstellte Dateien"
+    Type="Variable"
+    Display="always"
+    Required="false"
+    Mask="false">000</Config>
+
+  <Config
     Name="Log Level"
     Target="GRUENBECK2LOX_LOG_LEVEL"
     Default="INFO"
