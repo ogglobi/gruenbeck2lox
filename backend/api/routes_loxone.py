@@ -7,7 +7,7 @@ import logging
 from typing import Annotated, Any
 from xml.sax.saxutils import escape as xml_escape
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import Response as FastAPIResponse
 from pydantic import BaseModel, Field
 
@@ -231,7 +231,7 @@ async def delete_subscription(
 
 @router.get("/{server_id}/subscriptions/{sub_id}/template.xml")
 async def download_subscription_xml(
-    server_id: int, sub_id: int, db: Annotated[Database, Depends(get_db)]
+    request: Request, server_id: int, sub_id: int, db: Annotated[Database, Depends(get_db)]
 ) -> FastAPIResponse:
     """Generate a Loxone Config UDP template XML for manual configuration."""
     srv = await db.fetchone("SELECT * FROM loxone_servers WHERE id = ?", (server_id,))
@@ -250,6 +250,11 @@ async def download_subscription_xml(
     device_name: str = sub_row["device_name"]
     udp_port: int = srv["port"]
 
+    # IP of this bridge (gruenbeck2lox) — taken from the Host header so it
+    # reflects whatever address the browser used to reach the UI.
+    host_header = request.headers.get("host", "")
+    bridge_ip = host_header.split(":")[0] if host_header else "<BRIDGE-IP>"
+
     cmds = ""
     for field in fields:
         if field not in _FIELD_META:
@@ -267,7 +272,7 @@ async def download_subscription_xml(
     xml_content = (
         '<?xml version="1.0" encoding="utf-8"?>\n'
         f'<VirtualInUdp Title="{xml_escape(device_name)}" Comment=""'
-        f' Address="{xml_escape(srv["host"])}" Port="{udp_port}">\n'
+        f' Address="{xml_escape(bridge_ip)}" Port="{udp_port}">\n'
         f'\t<Info templateType="1" minVersion="16011106"/>\n'
         f'{cmds}</VirtualInUdp>\n'
     )
