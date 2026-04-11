@@ -19,7 +19,7 @@
   </Overview>
   <Category>HomeAutomation: Network:Management</Category>
   <WebUI>http://[IP]:[PORT:8080]/</WebUI>
-  <TemplateURL>https://raw.githubusercontent.com/ogglobi/unraid-templates/master/gruenbeck2lox.xml</TemplateURL>
+  <TemplateURL>https://raw.githubusercontent.com/ogglobi/unraid-templates/main/gruenbeck2lox.xml</TemplateURL>
   <Icon>https://raw.githubusercontent.com/ogglobi/gruenbeck2lox/master/unraid/gruenbeck2lox-icon.png</Icon>
   <ExtraParams>--restart=unless-stopped</ExtraParams>
   <PostArgs/>
