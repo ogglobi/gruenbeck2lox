@@ -37,6 +37,7 @@ class DevicePoller:
         self._flow_today_m3: float = 0.0
         self._flow_day: str = ""  # ISO date (UTC) of current accumulator day
         self._flow_loaded: bool = False  # True after DB restore attempted
+        self._flow_was_flowing: bool = False  # True while currentFlow > 0
 
     @property
     def device_id(self) -> int:
@@ -118,11 +119,18 @@ class DevicePoller:
 
         # ── Push currentFlow only when water is flowing ───────────────────────
         if not raw_flow_m3h or raw_flow_m3h <= 0:
-            return  # idle – regular 30s poll handles currentFlow=0 update
+            # Send a single currentFlow=0 packet on the falling edge (flow just stopped)
+            if self._flow_was_flowing:
+                self._flow_was_flowing = False
+                self._ws_push_ts = now
+                logger.debug("WS flow stopped device %s: sending currentFlow=0", self.device_id)
+                await self._push_flow_only(0.0)
+            return  # idle – regular 30s poll handles further updates
 
         if now - self._ws_push_ts < self._WS_PUSH_MIN_INTERVAL:
             return  # throttle
 
+        self._flow_was_flowing = True
         self._ws_push_ts = now
         flow_lmin = round(raw_flow_m3h * 1000 / 60, 1)
         logger.debug("WS flow push device %s: currentFlow=%s l/min", self.device_id, flow_lmin)
