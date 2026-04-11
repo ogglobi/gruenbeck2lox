@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>gruenbeck2lox</Name>
+  <Repository>ogglobi/gruenbeck2lox:latest</Repository>
+  <Registry>https://hub.docker.com/r/ogglobi/gruenbeck2lox/</Registry>
+  <Network>bridge</Network>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/ogglobi/gruenbeck2lox/issues</Support>
+  <Project>https://github.com/ogglobi/gruenbeck2lox</Project>
+  <Overview>
+    Verbindet Grünbeck-Enthärtungsanlagen (SD- und SC-Serie) lokal mit einem oder mehreren Loxone Miniservers –
+    ohne Cloud, ohne Middleware. Live-Durchfluss via WebSocket, 30s-Poll für alle anderen Werte,
+    UDP-Push an Loxone bei Wertänderung. Konfiguration über Web-UI.
+    &#xD;&#xD;
+    Unterstützte Modelle: SD18, SD21, SD23 (über myGruenbeck Cloud-API + lokal), SC18, SC23 (lokale REST-API).
+    &#xD;&#xD;
+    WICHTIG: Grünbeck-Anlage und Loxone Miniserver müssen im selben lokalen Netzwerk erreichbar sein.
+  </Overview>
+  <Category>HomeAutomation: Network:Management</Category>
+  <WebUI>http://[IP]:[PORT:8080]/</WebUI>
+  <TemplateURL>https://raw.githubusercontent.com/ogglobi/unraid-templates/master/gruenbeck2lox.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/ogglobi/gruenbeck2lox/master/unraid/gruenbeck2lox-icon.png</Icon>
+  <ExtraParams>--restart=unless-stopped</ExtraParams>
+  <PostArgs/>
+  <CPUset/>
+  <DonateText/>
+  <DonateLink/>
+  <Requires/>
+
+  <!-- Port -->
+  <Config
+    Name="Web-UI / API Port"
+    Target="8080"
+    Default="8080"
+    Mode="tcp"
+    Description="Port für Web-Oberfläche und REST-API. Im Browser aufrufen: http://&lt;unraid-ip&gt;:8080"
+    Type="Port"
+    Display="always"
+    Required="true"
+    Mask="false">8080</Config>
+
+  <!-- Volume -->
+  <Config
+    Name="Datenpfad"
+    Target="/app/data"
+    Default="/mnt/user/appdata/gruenbeck2lox"
+    Mode="rw"
+    Description="Persistenter Speicher für SQLite-Datenbank und config.yaml. Überlebt Container-Updates."
+    Type="Path"
+    Display="always"
+    Required="true"
+    Mask="false">/mnt/user/appdata/gruenbeck2lox</Config>
+
+  <!-- Environment variables -->
+  <Config
+    Name="Log Level"
+    Target="GRUENBECK2LOX_LOG_LEVEL"
+    Default="INFO"
+    Mode=""
+    Description="Protokollierungs-Detailgrad: DEBUG | INFO | WARNING | ERROR"
+    Type="Variable"
+    Display="always"
+    Required="false"
+    Mask="false">INFO</Config>
+
+  <Config
+    Name="Secret Key (optional)"
+    Target="GRUENBECK2LOX_SECRET_KEY"
+    Default=""
+    Mode=""
+    Description="Fernet-Schlüssel zur Verschlüsselung von Loxone-Passwörtern (base64url, 32 Bytes). Wird beim ersten Start automatisch generiert und in /app/data/.secret gespeichert – nur setzen um den Schlüssel zwischen Migrationen zu übertragen."
+    Type="Variable"
+    Display="advanced"
+    Required="false"
+    Mask="true"></Config>
+</Container>
