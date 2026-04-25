@@ -7,19 +7,31 @@ UMASK=${UMASK:-022}
 
 echo "Starting gruenbeck2lox with PUID=${PUID}, PGID=${PGID}, UMASK=${UMASK}"
 
+# Ensure group exists
+if ! getent group appgroup >/dev/null 2>&1; then
+    echo "Creating group appgroup with GID $PGID"
+    groupadd -g "$PGID" appgroup 2>/dev/null || true
+fi
+
+# Ensure user exists
+if ! getent passwd appuser >/dev/null 2>&1; then
+    echo "Creating user appuser with UID $PUID"
+    useradd -u "$PUID" -g appgroup -s /bin/sh -d /app appuser 2>/dev/null || true
+fi
+
 # Only adjust IDs if running as root
 if [ "$(id -u)" = "0" ]; then
     # Adjust group ID if different
-    if [ "$(id -g appgroup)" != "$PGID" ]; then
-        echo "Adjusting group ID from $(id -g appgroup) to $PGID"
+    if [ "$(getent group appgroup | cut -d: -f3)" != "$PGID" ]; then
+        echo "Adjusting group ID to $PGID"
         if ! groupmod -o -g "$PGID" appgroup 2>/dev/null; then
             echo "Warning: Failed to change group ID, continuing with default"
         fi
     fi
 
     # Adjust user ID if different
-    if [ "$(id -u appuser)" != "$PUID" ]; then
-        echo "Adjusting user ID from $(id -u appuser) to $PUID"
+    if [ "$(getent passwd appuser | cut -d: -f3)" != "$PUID" ]; then
+        echo "Adjusting user ID to $PUID"
         if ! usermod -o -u "$PUID" appuser 2>/dev/null; then
             echo "Warning: Failed to change user ID, continuing with default"
         fi
