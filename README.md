@@ -5,7 +5,10 @@ Schlanker Docker-Container, der eine oder mehrere **Grünbeck-Enthärtungsanlage
 > **Unterstützte Geräte**  
 > · SD-Serie (softliQ SD18, SD23, …) · SC-Serie (softliQ SC18, SC23, …)
 
----
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Docker Ready](https://img.shields.io/badge/docker-ready-brightgreen.svg)]()
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/ogglobi)
 
 ## Features
 
@@ -170,7 +173,7 @@ Die SD-Serie unterstützt keine direkte lokale REST-API. gruenbeck2lox verbindet
 
 ---
 
-## Entwicklung (ohne Docker)
+## Einrichtung (ohne Docker)
 
 ```bash
 # Abhängigkeiten installieren
@@ -190,41 +193,22 @@ python -m uvicorn backend.main:app --reload --port 8080
 - Web-UI: http://localhost:8080  
 - API-Docs (Swagger): http://localhost:8080/api/docs
 
----
 
-## Projektstruktur
+## 👨‍💻 Autor
 
-```
-backend/
-├── main.py              # FastAPI App + Lifespan
-├── config.py            # Settings (Umgebungsvariablen)
-├── scheduler.py         # Hintergrund-Polling + Loxone-Push
-├── gruenbeck/
-│   ├── client.py        # Gemeinsamer Client-Wrapper
-│   ├── cloud_api.py     # SD-Serie: myGruenbeck Cloud + WebSocket
-│   ├── sc_api.py        # SC-Serie: lokale REST-API
-│   ├── sd_api.py        # SD-Serie: lokale XML-API (Fallback)
-│   ├── models.py        # DeviceValues Pydantic-Modell
-│   └── parser.py        # XML/JSON-Parsing
-├── loxone/
-│   └── push.py          # UDP Push an Miniserver
-├── api/
-│   ├── routes_devices.py
-│   ├── routes_loxone.py
-│   ├── routes_values.py
-│   └── routes_ui.py
-└── db/
-    ├── database.py      # aiosqlite-Wrapper
-    └── migrations.py    # Schema-Setup
-frontend/                # Web-UI (Vanilla JS + Pico CSS, kein Build-Step)
-docker/
-├── Dockerfile
-├── docker-compose.yml
-└── data/                # Volume: SQLite + .secret (nicht im Repo)
-```
+**Development:** 2026
+**Status:** Production Ready ✅
+
+<p align="center">Made with ❤️ by <a href="https://github.com/ogglobi">ogglobi</a></p>
+
+<p align="center">
+  <a href="https://ko-fi.com/ogglobi">
+    <img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-☕-orange?style=flat-square" alt="Ko-fi">
+  </a>
+</p>
 
 ---
 
-## Lizenz
+## 📄 Lizenz
 
-MIT – siehe [LICENSE](LICENSE)
+MIT License - Siehe [LICENSE](LICENSE) Datei für Details
