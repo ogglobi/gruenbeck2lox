@@ -34,21 +34,47 @@ main.container {
 /* ── Tab Navigation ────────────────────────────────────────────────────────── */
 
 #nav-tabs a.tab-link {
-  color: var(--pico-muted-color);
+  color: var(--pico-color);
   text-decoration: none;
   padding: 0.35rem 0.75rem;
   border-radius: var(--radius);
   transition: background 0.15s, color 0.15s;
+  font-weight: 500;
 }
 
 #nav-tabs a.tab-link:hover {
   background: var(--pico-muted-background-color);
-  color: var(--pico-color);
+  color: var(--pico-primary);
 }
 
 #nav-tabs a.tab-link.active {
   background: var(--pico-primary);
   color: #fff;
+}
+
+/* ── Ko-fi Social Link ─────────────────────────────────────────────────────── */
+
+#nav-social {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#nav-social a.kofi-badge {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
+#nav-social a.kofi-badge:hover {
+  opacity: 0.8;
+}
+
+#nav-social img {
+  height: 24px;
+  width: auto;
 }
 
 /* ── Section header ────────────────────────────────────────────────────────── */
