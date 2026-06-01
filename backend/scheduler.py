@@ -30,6 +30,7 @@ class DevicePoller:
         self._prev_values: DeviceValues = DeviceValues()
         self._server_push_ts: dict[int, float] = {}
         self._ws_push_ts: float = 0.0  # last time a WS-triggered push was sent
+        self._device_is_online: int = 1  # 1 = online, 0 = offline (for is_online field)
         # WS-based flow accumulator – integrates mflow1 (m³/h) to derive waterToday.
         # Resets at UTC midnight. Persisted to SQLite so container restarts keep the value.
         self._flow_last_ts: float = 0.0
@@ -207,6 +208,7 @@ class DevicePoller:
                     cloud_client = await self._get_or_connect_cloud()
                     values = await cloud_client.get_realtime()
                     raw_source = cloud_client
+                    self._device_is_online = 1
                 except Exception as exc:
                     logger.warning(
                         "Cloud poll failed for device %s: %s – resetting client for reconnect",
@@ -219,6 +221,10 @@ class DevicePoller:
                         except Exception:
                             pass
                         self._cloud_client = None
+                    # Mark device as offline and push this status
+                    self._device_is_online = 0
+                    offline_values = DeviceValues(is_online=0)
+                    await self._push_to_loxone(offline_values, {"isOnline"})
                     return
             else:
                 # Local HTTP client (SC series or SD with local access)
@@ -226,14 +232,22 @@ class DevicePoller:
                 async with local_client:
                     values = await local_client.get_realtime()
                 raw_source = local_client
+            # Mark device as online
+            self._device_is_online = 1
         except Exception as exc:
             logger.error("Device %s poll failed: %s", device["id"], exc)
+            # Mark device as offline and push this status
+            self._device_is_online = 0
+            offline_values = DeviceValues(is_online=0)
+            await self._push_to_loxone(offline_values, {"isOnline"})
             return
 
         # Compute saltToday from persistent monthly baseline.
         # waterToday comes from the WS flow accumulator (more accurate, avoids
         # cloud monthly-counter jump artifacts).
         values = await self._compute_daily_today(values)
+        # Set online status from poll result
+        values.is_online = self._device_is_online
         today_utc = datetime.now(timezone.utc).date().isoformat()
         if self._flow_day == today_utc:
             # WS accumulator is running for today – use it for waterToday.

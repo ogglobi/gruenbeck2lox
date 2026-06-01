@@ -55,6 +55,7 @@ class DeviceValues(BaseModel):
     mode: str | None = Field(None, description="Operating mode (Comfort, Auto, etc.)")
     has_error: bool = Field(False, description="True if active (unresolved) error exists")
     last_error_msg: str | None = Field(None, description="Latest unresolved error message")
+    is_online: int = Field(1, description="1 if device is reachable, 0 if offline")
 
     @field_validator("last_regeneration", "next_regeneration", "mode", "last_error_msg", mode="before")
     @classmethod
@@ -89,6 +90,7 @@ class DeviceValues(BaseModel):
             "mode":                 self.mode,
             "hasError":             1 if self.has_error else 0,
             "lastErrorMsg":         self.last_error_msg,
+            "isOnline":             self.is_online,
         }
 
     def diff(self, other: "DeviceValues") -> dict[str, Any]:
