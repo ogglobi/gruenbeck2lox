@@ -479,6 +479,7 @@ const FIELDS = [
   { key: "last_regeneration",   label: "Letzte Regeneration",     grp: "Regeneration" },
   { key: "maintenanceDays",     label: "Tage bis Wartung",        grp: "Status" },
   { key: "hasError",            label: "Fehler aktiv (0/1)",      grp: "Status" },
+  { key: "isOnline",           label: "Online-Status (0/1)",      grp: "Status" },
   { key: "currentFlow",         label: "Durchfluss (l/Min)",       grp: "Status" },
   { key: "error_code",          label: "Fehlercode",              grp: "Status" },
 ];
